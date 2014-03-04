@@ -1,7 +1,11 @@
 package edu.sjsu.cmpe.library.repository;
 
 import edu.sjsu.cmpe.library.domain.Book;
+import edu.sjsu.cmpe.library.domain.Authors;
+import edu.sjsu.cmpe.library.domain.Reviews;
 
+//import java.util.concurrent.*;
+//import java.util.*;
 /**
  * Book repository interface.
  * 
@@ -26,7 +30,14 @@ public interface BookRepositoryInterface {
      *            a valid ISBN
      * @return a book instance
      */
-    Book getBookByISBN(Long isbn);
+    Book getBookByISBN(long isbn);
+    Book deleteBookByIsbn(long isbn);
+    Book updateBookByIsbn(long isbn);
+    Reviews createReviews(Reviews newreview);
+    Reviews viewReviewsById(long Id);
+    Reviews viewAllReviews(Reviews review);
+    Authors viewBookAuthorsById(long Id);
+    Authors viewAllAuthors(Authors author);
 
     // TODO: add other operations here!
 }
