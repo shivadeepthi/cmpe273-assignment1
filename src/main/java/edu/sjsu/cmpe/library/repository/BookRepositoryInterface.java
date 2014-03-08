@@ -1,8 +1,12 @@
 package edu.sjsu.cmpe.library.repository;
 
+import java.util.ArrayList;
+
+import com.yammer.dropwizard.jersey.params.LongParam;
+
+import edu.sjsu.cmpe.library.domain.Book.Authors;
 import edu.sjsu.cmpe.library.domain.Book;
-import edu.sjsu.cmpe.library.domain.Authors;
-import edu.sjsu.cmpe.library.domain.Reviews;
+//import edu.sjsu.cmpe.library.domain.Book.Reviews;
 
 //import java.util.concurrent.*;
 //import java.util.*;
@@ -22,7 +26,7 @@ public interface BookRepositoryInterface {
      * @return a newly created book instance with auto-generated ISBN
      */
     Book saveBook(Book newBook);
-
+   // Authors saveAuthor(Authors newAuthors);
     /**
      * Retrieve an existing book by ISBN
      * 
@@ -33,11 +37,11 @@ public interface BookRepositoryInterface {
     Book getBookByISBN(long isbn);
     Book deleteBookByIsbn(long isbn);
     Book updateBookByIsbn(long isbn);
-    Reviews createReviews(Reviews newreview);
-    Reviews viewReviewsById(long Id);
-    Reviews viewAllReviews(Reviews review);
-    Authors viewBookAuthorsById(long Id);
-    Authors viewAllAuthors(Authors author);
+   Book.Reviews createReviews(Book.Reviews review);
+    Book.Reviews viewReviewsById(long Id);
+    Book viewAllReviews(long Id);
+   Book viewBookAuthorsById(long Id);
+Book viewAllAuthors(long isbn);
 
     // TODO: add other operations here!
 }

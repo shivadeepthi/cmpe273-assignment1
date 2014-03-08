@@ -3,15 +3,24 @@ package edu.sjsu.cmpe.library.repository;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
 //import javax.ws.rs.PathParam;
 
-//import com.yammer.dropwizard.jersey.params.LongParam;
 
-import edu.sjsu.cmpe.library.domain.Authors;
+
+import com.yammer.dropwizard.jersey.params.LongParam;
+
+
+
+
+
+
+import edu.sjsu.cmpe.library.domain.Book.Authors;
 import edu.sjsu.cmpe.library.domain.Book;
-import edu.sjsu.cmpe.library.domain.Reviews;
+//import edu.sjsu.cmpe.library.domain.Book.Reviews;
+import edu.sjsu.cmpe.library.domain.Book.Reviews;
 
 
 //import java.util.*;
@@ -20,23 +29,25 @@ import edu.sjsu.cmpe.library.domain.Reviews;
 public class BookRepository implements BookRepositoryInterface {
     /** In-memory map to store books. (Key, Value) -> (ISBN, Book) */
     private final ConcurrentHashMap<Long, Book> bookInMemoryMap;
-    private final ConcurrentHashMap<Long, Reviews> reviewMap;
-    private final ConcurrentHashMap<Long, Authors> AuthorsInMap;
-
+   private final ConcurrentHashMap<Long, Reviews> ReviewInMemoryMap;
+   private final ConcurrentHashMap<Long, Book.Authors> AuthorsInMemoryMap;
+    
     /** Never access this key directly; instead use generateISBNKey() */
     private long isbnKey;
     private long id;
     private long Rid;
+    //Authors newAuthors;
     
 
-    public BookRepository(ConcurrentHashMap<Long, Book> bookMap,ConcurrentHashMap<Long, Reviews> reviews,ConcurrentHashMap<Long, Authors> AuthorsMap) {
+    public BookRepository(ConcurrentHashMap<Long, Book> bookMap) {
 	checkNotNull(bookMap, "bookMap must not be null for BookRepository");
 	bookInMemoryMap = bookMap;
+	//Authors newAuthors=new Authors();
 	isbnKey = 0;
-	reviewMap=reviews;
-	AuthorsInMap=AuthorsMap;
-	id=0;
-	Rid=0;
+	ReviewInMemoryMap=new ConcurrentHashMap<Long, Reviews>();
+	AuthorsInMemoryMap=new ConcurrentHashMap<Long, Book.Authors>();
+	
+	
 	
     }
 
@@ -68,29 +79,35 @@ private final Long generateReviewsId() {
      */
     @Override
     public Book saveBook(Book newBook) {
+    	System.out.println("in repo");
 	checkNotNull(newBook, "newBook instance must not be null");
 	// Generate new ISBN
+	
 	Long isbn = generateISBNKey();
 	newBook.setIsbn(isbn);
-	newBook.getLanguage();
-	newBook.getPublicationDate();
-    newBook.getStatus();
-	newBook.getTitle();
-	Authors authors=new Authors();
+	System.out.print("creadted isbn");
 	Long id = generateAuthorsId();
-	authors.setId(id);
-	authors.getName();
-	Reviews review=new Reviews();
-	review.getComment();
+	Authors a=new Authors();
+	a.setId(id);
+	System.out.println("authirs d"+id);
+	System.out.println(a.getName());
 	
+	
+	//Long Rid=generateReviewsId();
+	//Reviews.setRid(Rid);
 	
 	// TODO: create and associate other fields such as author
 
 	// Finally, save the new book into the map
+	System.out.print(isbn);
+	
 	bookInMemoryMap.putIfAbsent(isbn, newBook);
+	AuthorsInMemoryMap.putIfAbsent(id, a );
 
 	return newBook;
     }
+    
+  
 
     /**
      * @see edu.sjsu.cmpe.library.repository.BookRepositoryInterface#getBookByISBN(java.lang.Long)
@@ -117,41 +134,40 @@ private final Long generateReviewsId() {
     }
    
     
-    public Reviews createReviews(Reviews newreview)
+    public Book.Reviews createReviews(Book.Reviews newreview)
     {
     	Long Rid=generateReviewsId();
-    	newreview.setId(Rid);
-    	newreview.getRating();
-    	newreview.getComment();
-    	reviewMap.putIfAbsent(id,newreview);
+    	Reviews r=new Reviews();
+    	r.setRid(Rid);
+    	System.out.println(r.getRating()+"rating");
+    	System.out.println(r.getRid());
+    	
+    	ReviewInMemoryMap.putIfAbsent(Rid, newreview);
     	return newreview;
     }
-    public Reviews viewReviewsById(long Id)
+    public Book.Reviews viewReviewsById(long Id)
     {
     	checkArgument(Id > 0,
     			"Id was %s but expected greater than zero value", Id);
-    		return reviewMap.get(Id);
+    	return ReviewInMemoryMap.get(Id);
+    		
     }
-   public  Reviews viewAllReviews(Reviews reviews)
+   public  Book viewAllReviews(long isbn)
     {
 	   
-	  reviews.getId();
-	  reviews.getComment();
-	  reviews.getRating();
-	  return reviews;
+	  return bookInMemoryMap.get(isbn);
 	   
     }
-    public Authors viewBookAuthorsById(long Id)
+    public Book viewBookAuthorsById(long Id)
     {
     	checkArgument(Id > 0,
     			"Id was %s but expected greater than zero value", Id);
-    		return AuthorsInMap.get(Id);
+    	return bookInMemoryMap.get(Id);
     }
-    public Authors viewAllAuthors(Authors authors)
+    public Book viewAllAuthors(long isbn)
     {
-    	authors.getId();
-    	authors.getName();
-    	return authors;
+    	System.out.print(isbn+"inside repo");
+    	return bookInMemoryMap.get(isbn);
     }
 
 	

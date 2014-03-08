@@ -2,25 +2,33 @@ package edu.sjsu.cmpe.library.dto;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import edu.sjsu.cmpe.library.domain.Reviews;
+
+
+import edu.sjsu.cmpe.library.domain.Book;
+//import edu.sjsu.cmpe.library.domain.Reviews;
 
 @JsonPropertyOrder(alphabetic = true)
 public class ReviewDto extends LinksDto {
-    private Reviews reviews;
+    private Book.Reviews review;
 
     
-    public ReviewDto(Reviews reviews) {
+    public ReviewDto(Book.Reviews review) {
 	super();
-	this.reviews = reviews;
+	this.review=review;
     }
+    
+    public ReviewDto() {
+    	super();
+    	
+        }
 
    
-    public Reviews getReviews() {
-	return reviews;
+    public Book.Reviews getReviews() {
+	return review;
     }
 
     
-    public void setReviews(Reviews reviews) {
-	this.reviews=reviews;
+    public void setReviews(Book.Reviews review) {
+	this.review=review;
     }
 }
