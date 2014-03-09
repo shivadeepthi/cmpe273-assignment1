@@ -126,11 +126,11 @@ private final Long generateReviewsId() {
     	return bookInMemoryMap.remove(isbn);
     }
     
-    public Book updateBookByIsbn(long isbn)
+    public Book updateBookByIsbn(long isbn,Book newbook)
     {
     	checkArgument(isbn > 0,
     			"ISBN was %s but expected greater than zero value", isbn);
-    	return bookInMemoryMap.get(isbn);
+    	return bookInMemoryMap.put(isbn, newbook);
     }
    
     
@@ -141,7 +141,7 @@ private final Long generateReviewsId() {
     	r.setRid(Rid);
     	System.out.println(r.getRating()+"rating");
     	System.out.println(r.getRid());
-    	
+    	//bookInMemoryMap.putIfAbsent(key, value)
     	ReviewInMemoryMap.putIfAbsent(Rid, newreview);
     	return newreview;
     }

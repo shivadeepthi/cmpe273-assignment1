@@ -36,7 +36,7 @@ public interface BookRepositoryInterface {
      */
     Book getBookByISBN(long isbn);
     Book deleteBookByIsbn(long isbn);
-    Book updateBookByIsbn(long isbn);
+    Book updateBookByIsbn(long isbn,Book newbook);
    Book.Reviews createReviews(Book.Reviews review);
     Book.Reviews viewReviewsById(long Id);
     Book viewAllReviews(long Id);

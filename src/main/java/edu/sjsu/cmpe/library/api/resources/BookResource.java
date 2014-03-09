@@ -1,9 +1,5 @@
 package edu.sjsu.cmpe.library.api.resources;
 
-//import java.util.concurrent.ConcurrentHashMap;
-
-import java.util.ArrayList;
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -12,11 +8,17 @@ import javax.ws.rs.DELETE;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
+
+import javax.ws.rs.core.CacheControl;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.validation.constraints.*;
 
+//import com.yammer.dropwizard.jersey.caching.CacheControl;
 //import java.util.*;
 import com.yammer.dropwizard.jersey.params.LongParam;
 import com.yammer.metrics.annotation.Timed;
@@ -48,11 +50,20 @@ public class BookResource {
     @GET
     @Path("/{isbn}")
     @Timed(name = "view-book")
-    public BookDto getBookByIsbn(@NotNull @PathParam("isbn") LongParam isbn) {
+    public BookDto getBookByIsbn(@NotNull @PathParam("isbn") LongParam isbn,@Context Request request) {
 	Book book = bookRepository.getBookByISBN(isbn.get());
+	CacheControl cc = new CacheControl();
+    cc.setMaxAge(86400);
 	
+	 EntityTag etag = new EntityTag(Integer.toString(book.hashCode()));
+	 ResponseBuilder builder = request.evaluatePreconditions(etag);
+	 if(builder == null){
+         builder = Response.ok(book);
+         builder.tag(etag);
+ }
+	builder.cacheControl(cc);
+	//return builder.build();
 	BookDto bookResponse = new BookDto(book);
-	
 	bookResponse.addLink(new LinkDto("view-book", "/books/" + book.getIsbn(),"GET"));
 	bookResponse.addLink(new LinkDto("update-book","/books/" + book.getIsbn(), "PUT"));
 	bookResponse.addLink(new LinkDto("Delete-book","/books/" + book.getIsbn(), "DELETE"));
@@ -62,6 +73,8 @@ public class BookResource {
 
 	return bookResponse;
     }
+    
+    
 
     
     @POST
@@ -87,8 +100,8 @@ public class BookResource {
     @PUT
     @Path("/{isbn}")
     @Timed(name = "update-book")
-    public BookDto setBookByIsbn(@NotNull @PathParam("isbn") LongParam isbn) {
-    	Book book = bookRepository.updateBookByIsbn(isbn.get());
+    public BookDto setBookByIsbn(@NotNull @PathParam("isbn") LongParam isbn,Book response) {
+    	Book book = bookRepository.updateBookByIsbn(isbn.get(),response);
     	BookDto bookResponse = new BookDto(book);
     	bookResponse.addLink(new LinkDto("view-book", "/books/" + book.getIsbn(),"GET"));
     	bookResponse.addLink(new LinkDto("new-book","/books/" + book.getIsbn(), "POST"));
