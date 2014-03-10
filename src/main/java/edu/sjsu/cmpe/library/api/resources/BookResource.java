@@ -50,7 +50,7 @@ public class BookResource {
     @GET
     @Path("/{isbn}")
     @Timed(name = "view-book")
-    public BookDto getBookByIsbn(@NotNull @PathParam("isbn") LongParam isbn,@Context Request request) {
+    public Response getBookByIsbn(@NotNull @PathParam("isbn") LongParam isbn,@Context Request request) {
 	Book book = bookRepository.getBookByISBN(isbn.get());
 	CacheControl cc = new CacheControl();
     cc.setMaxAge(86400);
@@ -62,7 +62,7 @@ public class BookResource {
          builder.tag(etag);
  }
 	builder.cacheControl(cc);
-	//return builder.build();
+	
 	BookDto bookResponse = new BookDto(book);
 	bookResponse.addLink(new LinkDto("view-book", "/books/" + book.getIsbn(),"GET"));
 	bookResponse.addLink(new LinkDto("update-book","/books/" + book.getIsbn(), "PUT"));
@@ -71,7 +71,8 @@ public class BookResource {
 	bookResponse.addLink(new LinkDto("view-all-reviews","/books/" + book.getIsbn() + "/reviews", "GET"));
 	// add more links
 
-	return bookResponse;
+	//return bookResponse;
+	return builder.build();
     }
     
     
