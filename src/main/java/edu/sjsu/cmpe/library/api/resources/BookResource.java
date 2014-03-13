@@ -8,7 +8,6 @@ import javax.ws.rs.DELETE;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-
 import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.EntityTag;
@@ -17,7 +16,9 @@ import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.validation.constraints.*;
+import javax.ws.rs.QueryParam;
 
+import com.google.common.base.Optional;
 //import com.yammer.dropwizard.jersey.caching.CacheControl;
 //import java.util.*;
 import com.yammer.dropwizard.jersey.params.LongParam;
@@ -72,7 +73,7 @@ public class BookResource {
 	// add more links
 
 	//return bookResponse;
-	return builder.build();
+	return builder.entity(bookResponse).build();
     }
     
     
@@ -84,11 +85,9 @@ public class BookResource {
 	// Store the new book in the BookRepository so that we can retrieve it.
     	System.out.println("i m here");
 	Book savedBook = bookRepository.saveBook(request);
-	System.out.println("passesSS");
 	String location = "/books/" + savedBook.getIsbn();
-	System.out.println(location);
-	BookDto bookResponse = new BookDto(savedBook);
-	System.out.print(bookResponse);
+	BookDto bookResponse = new BookDto();
+	//System.out.print(bookResponse);
 	bookResponse.addLink(new LinkDto("view-book", location, "GET"));
 	bookResponse.addLink(new LinkDto("update-book", location, "PUT"));
 	bookResponse.addLink(new LinkDto("delete-book", location, "DELETE"));
@@ -101,9 +100,11 @@ public class BookResource {
     @PUT
     @Path("/{isbn}")
     @Timed(name = "update-book")
-    public BookDto setBookByIsbn(@NotNull @PathParam("isbn") LongParam isbn,Book response) {
-    	Book book = bookRepository.updateBookByIsbn(isbn.get(),response);
-    	BookDto bookResponse = new BookDto(book);
+    public BookDto setBookByIsbn(@NotNull @PathParam("isbn") LongParam isbn,@QueryParam("status") Optional<String> status) {
+    	Book book = bookRepository.updateBookByIsbn(isbn.get());
+    	book.setStatus(status.get());
+    	System.out.println(status.get());
+    	BookDto bookResponse = new BookDto();
     	bookResponse.addLink(new LinkDto("view-book", "/books/" + book.getIsbn(),"GET"));
     	bookResponse.addLink(new LinkDto("new-book","/books/" + book.getIsbn(), "POST"));
     	bookResponse.addLink(new LinkDto("delete-book","/books/" + book.getIsbn(), "DELETE"));
@@ -131,6 +132,9 @@ public class BookResource {
     public Response createReview(@PathParam ("isbn") LongParam isbn,Book.Reviews request) {
 	System.out.println("i m insdie review");
 	Book.Reviews savedReview = bookRepository.createReviews(request);
+	Book book=new Book();
+	System.out.println("setting the reviews to book");
+	book.setReviews(request);
 	String location = "/books/" +isbn.get() +"/reviews/"+savedReview.getRid();
 	System.out.println(location);
 	ReviewDto reviewResponse = new ReviewDto(savedReview);

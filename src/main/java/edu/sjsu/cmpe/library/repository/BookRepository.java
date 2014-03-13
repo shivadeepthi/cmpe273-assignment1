@@ -126,11 +126,11 @@ private final Long generateReviewsId() {
     	return bookInMemoryMap.remove(isbn);
     }
     
-    public Book updateBookByIsbn(long isbn,Book newbook)
+    public Book updateBookByIsbn(long isbn)
     {
     	checkArgument(isbn > 0,
     			"ISBN was %s but expected greater than zero value", isbn);
-    	return bookInMemoryMap.put(isbn, newbook);
+    	return bookInMemoryMap.get(isbn);
     }
    
     

@@ -11,10 +11,10 @@ public class BookDto extends LinksDto {
     /**
      * @param book
      */
-   /* public BookDto() {
+    public BookDto() {
     	super();
     	
-        }*/
+        }
     
     public BookDto(Book book) {
 	super();
